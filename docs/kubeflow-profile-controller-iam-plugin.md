@@ -19,6 +19,13 @@ user. This profile is created by a service called KFAM and managed by the profil
     - default-editor - namespace write
 * AuthorizationPolicy
 
+For now we're going to ignore most of those things and focus on the service account. On
+EKS clusters the service account is the identity that can assume a roles. There's some
+setup required to make that statement trust but just to keep it simple, a pod that uses
+a service account tagged with a role-arn can assume that role.
+
+
+
 
 
 [Kubeflow]: https://www.kubeflow.org/docs/
