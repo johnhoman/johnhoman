@@ -9,10 +9,17 @@ on an EKS cluster and any number of protected resources in AWS
 
 ## Profile Controller
 [Kubeflow] is designed in such a way that each user is provided their own namespace.
-The goal of these namespaces seems to be isolated environments as well is imposing
-resource restrictions per user. This allows users to track their own cluster resources
-e.g. configmaps, secrets, ... etc.
+During [user onboarding] a custom resource called a `Profile` is created for the 
+user. This profile is created by a service called KFAM and managed by the profile controller. The profile controller manages several other resources as well, some of which are
+
+* Namespace
+* RoleBinding
+* ServiceAccount
+    - default-viewer - namespace read
+    - default-editor - namespace write
+* AuthorizationPolicy
 
 
 
 [Kubeflow]: https://www.kubeflow.org/docs/
+[user onboarding]: https://www.kubeflow.org/docs/components/multi-tenancy/getting-started/#onboarding-a-new-user
