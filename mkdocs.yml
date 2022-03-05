@@ -1,0 +1,22 @@
+site_name: Jack Homan
+repo_url: https://github.com/johnhoman
+theme:
+  icon:
+    repo: fontawesome/brands/git-alt
+  name: material
+  palette: 
+  - scheme: default
+    toggle:
+      icon: material/toggle-switch-off-outline 
+      name: Switch to dark mode
+  - media: "(prefers-color-scheme: dark)"
+    scheme: slate 
+    toggle:
+      icon: material/toggle-switch
+      name: Switch to light mode
+plugins:
+- search
+- macros
+nav:
+- index.md
+- about.md
