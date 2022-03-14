@@ -18,6 +18,8 @@ plugins:
 - search
 - macros
 markdown_extensions:
+- admonition
+- pymdownx.details
 - pymdownx.superfences:
     custom_fences:
     - name: mermaid
@@ -28,4 +30,6 @@ nav:
 - about.md
 - Kubeflow:
   - kubeflow-profile-controller-iam-plugin.md
+- Kubernetes:
+  - kubernetes-webhook-python.md
 
