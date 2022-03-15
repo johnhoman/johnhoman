@@ -11,7 +11,7 @@
 A webhook is a way to validate and/or apply defaults
 to a resource manifest such as a pod. Setting up a webhook typically requires a web
 service (deployed on the cluster in the normal way) and some configuration
-to tell Kubernetes how to use the web service. Those configurations are
+to tell Kubernetes how to use the web service. These configurations are
 
 * [MutatingWebhookConfiguration]
 * [ValidatingWebhookConfiguration]
