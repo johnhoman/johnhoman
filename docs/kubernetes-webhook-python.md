@@ -112,15 +112,16 @@ such as `registry.example.com` are allowed (e.g. corporate compliance requiremen
 then we can have the validating webhook reject all pods with references to
 from other registries.
 
-!!! example "Example - Reject pods that aren't from `registry.example.com`"
 
-    `jhoman@pop-os:~$ kubectl run http-server --image=python:3.7 -- python -m http.server 8888`
+```sh
+jhoman@pop-os:~$ kubectl run http-server --image=python:3.7 -- python -m http.server 8888
+```
+:x: `Error from server: admission webhook "webhook.example.com" denied the request: Invalid image. Images must come from registry.example.com`
 
-    :x: `Error from server: admission webhook "webhook.example.com" denied the request: Invalid image. Images must come from registry.example.com`
-
-    `jhoman@pop-os:~$ kubectl run http-server --image={++registry.example.com++}/python:3.7 -- python -m http.server 8888`
-
-    :white_check_mark: `pod/http-server created`
+```sh
+jhoman@pop-os:~$ kubectl run http-server --image={++registry.example.com++}/python:3.7 -- python -m http.server 8888
+```
+:white_check_mark: `pod/http-server created`
 
 
 ## Writing a Webhook
