@@ -63,10 +63,6 @@ Kubernetes will forward an admission review
 to all applicable webhooks. The webhooks will respond with either patches
 or allow/deny. Eventually Kubernetes will persist the resource.
 
-<!--
-this is a comment
--->
-
 ### Mutating (Defaulting) Webhook
 
 A mutating webhook would apply defaults to a resource triggered by some event.
@@ -111,34 +107,64 @@ spec:
 ### Validating Webhook
 A validating webhook doesn't make any changes to the manifest. Its only
 job is to assert on the validity of the resource. A common use case for
-this is validating the image. If only images from a specific registry
-such as `registry.example.com` are allowed (e.g. enterprise compliance requirements),
-then we have the validating webhook
-reject all pods with invalid references to those images.
+this is validating a container image. If only images from a specific registry
+such as `registry.example.com` are allowed (e.g. corporate compliance requirements),
+then we can have the validating webhook reject all pods with references to
+from other registries.
 
-#### Example - Creating a pod with a public image
-```sh
-kubectl apply -f - <<EOF
-apiVersion: v1
-kind: Pod
-metadata:
-  name: http-server
-spec:
-  containers:
-    - name: http-server
-      image: python:3.9-slim
-      command: ["python", "-m", "http.server", "8888"]
-      ports:
-        - name: http
-          containerPort: 8888
-EOF
+!!! example "Example - Reject pods that aren't from `registry.example.com`"
+
+    `jhoman@pop-os:~$ kubectl run http-server --image=python:3.7 -- python -m http.server 8888`
+
+    :x: `Error from server: admission webhook "webhook.example.com" denied the request: Invalid image. Images must come from registry.example.com`
+
+    `jhoman@pop-os:~$ kubectl run http-server --image={++registry.example.com++}/python:3.7 -- python -m http.server 8888`
+
+    :white_check_mark: `pod/http-server created`
+
+
+## Writing a Webhook
+
+Any of the Python web frameworks should work but [fastapi] is likely
+the easiest. There's a lot of good information in the docs so for anything specific
+probably start there.
+
+
+The following is a basic webhook endpoint that sets the image pull policy
+in all containers of a pod to `Always` is unset. You can read more about a
+container image pull policy [here](https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy).
+
+!!! note 
+    
+    In practice this is unnecessary. Kubernetes will choose a sensible default
+    based on the image tag if imagePullPolicy isn't specified
+
+```python
+# main.py
+from base64 import b64encode
+
+from fastapi import FastAPI
+from jsonpatch import JsonPatch
+
+
+app = FastAPI()
+
+@app.post("/mutate-v1-pod")
+def mutate_pod(admission_review: dict):
+    pod = admission_review["request"]["object"]
+    containers = pod["spec"]["containers"]
+    for k in range(0, len(containers)):
+        containers[k].setdefault("imagePullPolicy", "Always")
+    pod["spec"]["containers"] = containers
+    patch = JsonPatch.from_diff(admission_review["request"]["object"], pod)
+    return {
+        "response": {
+            "uid": admission_review["request"]["uid"],
+            "patch": b64encode(str(patch).encode()).decode(),
+            "patchType": "JSONPatch",
+        }
+    }
 ```
-
-### What are side effects?
-
-## Why Python and not Go?
-
-## Getting Started
 
 
 
@@ -146,3 +172,4 @@ EOF
 [ValidatingWebhookConfiguration]: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#validatingwebhookconfiguration-v1-admissionregistration-k8s-io
 [MutatingWebhookConfiguration]: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#mutatingwebhookconfiguration-v1-admissionregistration-k8s-io
 [etcd]: https://kubernetes.io/docs/concepts/overview/components/#etcd
+[fastapi]: https://fastapi.tiangolo.com/
