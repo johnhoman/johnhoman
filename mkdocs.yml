@@ -18,8 +18,17 @@ plugins:
 - search
 - macros
 markdown_extensions:
+- pymdownx.snippets
+- pymdownx.critic
+- pymdownx.caret
+- pymdownx.keys
+- pymdownx.mark
+- pymdownx.tilde
 - admonition
 - pymdownx.details
+- pymdownx.emoji:
+    emoji_index: !!python/name:materialx.emoji.twemoji
+    emoji_generator: !!python/name:materialx.emoji.to_svg
 - pymdownx.superfences:
     custom_fences:
     - name: mermaid
@@ -32,4 +41,5 @@ nav:
   - kubeflow-profile-controller-iam-plugin.md
 - Kubernetes:
   - kubernetes-webhook-python.md
-
+extra_css:
+- stylesheets/extra.css
