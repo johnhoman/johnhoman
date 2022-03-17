@@ -144,6 +144,40 @@ container image pull policy [here](https://kubernetes.io/docs/concepts/container
 --8<-- "docs_src/kubernetes/webhook/python/tutorial0001.py"
 ```
 
+Let's take a deeper look at what's going on here.
+
+```python hl_lines="13"
+--8<-- "docs_src/kubernetes/webhook/python/tutorial0001.py"
+```
+
+`admission_review` is the payload sent by the Kubernetes API server that contains
+the manifest contents. The manifest resides in `#!python admission_review["request"]["object"]`
+and in this example it contains a `Pod`.
+
+!!! note
+
+    `#!python copy.deepcopy()` is used to avoid mutating the original object. The original
+    needs to be preserved to compute the json patch
+
+```python hl_lines="16-17"
+--8<-- "docs_src/kubernetes/webhook/python/tutorial0001.py"
+```
+
+Here the webhook is setting default values on the spec. It's important
+that a webhook doesn't override a user provided value and only sets a
+value this isn't already set in the manifest. If, for example, there
+was already an `imagePullPolicy` of `IfNotPreset` set on the `Pod` then
+it would be impolite to ignore it and potentially dangerous (existing
+values are probably set for reason).
+
+```python hl_lines="19 22"
+--8<-- "docs_src/kubernetes/webhook/python/tutorial0001.py"
+```
+
+The response is a base64 encoded [json patch] with the changes
+rather than the actual changed manifest. Which is basically signaling to
+Kubernetes that the only fields that you care about are the fields
+within the patch.
 
 
 [dynamic admission control]: https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/
@@ -151,3 +185,4 @@ container image pull policy [here](https://kubernetes.io/docs/concepts/container
 [MutatingWebhookConfiguration]: https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.23/#mutatingwebhookconfiguration-v1-admissionregistration-k8s-io
 [etcd]: https://kubernetes.io/docs/concepts/overview/components/#etcd
 [fastapi]: https://fastapi.tiangolo.com/
+[json patch]: https://datatracker.ietf.org/doc/html/rfc6902
