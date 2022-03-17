@@ -18,6 +18,7 @@ plugins:
 - search
 - macros
 markdown_extensions:
+- pymdownx.inlinehilite
 - pymdownx.snippets
 - pymdownx.critic
 - pymdownx.caret
