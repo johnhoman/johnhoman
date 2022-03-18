@@ -175,7 +175,7 @@ values are probably set for reason).
 ```
 
 The response is a base64 encoded [json patch] with the changes
-rather than the actual changed manifest. Which is basically signaling to
+rather than the actual changed manifest. This is essentially signaling to
 Kubernetes that the only fields that you care about are the fields
 within the patch.
 
